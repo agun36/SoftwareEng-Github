@@ -181,3 +181,194 @@ text-align: center;
 padding: 2rem;
 font-size: 0.9rem;
 } \*/ -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Calculator App</title>
+ <style>
+  .calculator {
+   width: 300px;
+   background-color: #f0f0f0;
+   padding: 20px;
+   border-radius: 10px;
+   margin: 20px auto;
+  }
+
+.display {
+background-color: #ffffff;
+padding: 15px;
+margin-bottom: 15px;
+text-align: right;
+font-size: 24px;
+border: 1px solid #cccccc;
+border-radius: 5px;
+}
+
+.buttons {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 10px;
+}
+
+button {
+padding: 15px;
+font-size: 18px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+transition: opacity 0.2s;
+}
+
+button:hover {
+opacity: 0.8;
+}
+
+.clear {
+background-color: #ff4444;
+color: white;
+}
+
+.operator {
+background-color: #4CAF50;
+color: white;
+}
+
+.equals {
+background-color: #2196F3;
+color: white;
+}
+
+.number {
+background-color: #e0e0e0;
+}
+
+.zero {
+grid-column: span 2;
+}
+</style>
+
+</head>
+
+<body>
+ <div class="calculator">
+  <div class="display">0</div>
+  <div class="buttons">
+   <button class="clear">C</button>
+   <button class="operator">/</button>
+   <button class="operator">*</button>
+   <button class="operator">-</button>
+   <button class="number">7</button>
+   <button class="number">8</button>
+   <button class="number">9</button>
+   <button class="operator">+</button>
+   <button class="number">4</button>
+   <button class="number">5</button>
+   <button class="number">6</button>
+   <button class="equals">=</button>
+   <button class="number">1</button>
+   <button class="number">2</button>
+   <button class="number">3</button>
+   <button class="number zero">0</button>
+  </div>
+ </div>
+
+ <script>
+  const display = document.querySelector('.display');
+  let currentOperand = '';
+  let previousOperand = '';
+  let operation = null;
+
+  // Number buttons
+  document.querySelectorAll('.number').forEach(button => {
+   button.addEventListener('click', () => {
+    if (currentOperand === 'Error') currentOperand = '';
+    currentOperand += button.textContent;
+    updateDisplay();
+   });
+  });
+
+  // Operator buttons
+  document.querySelectorAll('.operator').forEach(button => {
+   button.addEventListener('click', () => {
+    if (currentOperand === 'Error') return;
+
+    if (currentOperand === '' && previousOperand !== '') {
+     operation = button.textContent;
+     return;
+    }
+
+    if (currentOperand === '') return;
+
+    if (previousOperand !== '') {
+     compute();
+    }
+
+    operation = button.textContent;
+    previousOperand = currentOperand;
+    currentOperand = '';
+    updateDisplay();
+   });
+  });
+
+  // Equals button
+  document.querySelector('.equals').addEventListener('click', () => {
+   if (previousOperand === '' || currentOperand === '' || !operation) return;
+   compute();
+  });
+
+  // Clear button
+  document.querySelector('.clear').addEventListener('click', () => {
+   currentOperand = '';
+   previousOperand = '';
+   operation = null;
+   updateDisplay();
+  });
+
+  function compute() {
+   let computation;
+   const prev = parseFloat(previousOperand);
+   const current = parseFloat(currentOperand);
+
+   if (isNaN(prev) || isNaN(current)) return;
+
+   switch (operation) {
+    case '+':
+     computation = prev + current;
+     break;
+    case '-':
+     computation = prev - current;
+     break;
+    case '*':
+     computation = prev * current;
+     break;
+    case '/':
+     if (current === 0) {
+      currentOperand = 'Error';
+      previousOperand = '';
+      operation = null;
+      updateDisplay();
+      return;
+     }
+     computation = prev / current;
+     break;
+    default:
+     return;
+   }
+
+   currentOperand = computation.toString();
+   previousOperand = '';
+   operation = null;
+   updateDisplay();
+  }
+
+  function updateDisplay() {
+   display.textContent = currentOperand || '0';
+  }
+ </script>
+</body>
+
+</html>
